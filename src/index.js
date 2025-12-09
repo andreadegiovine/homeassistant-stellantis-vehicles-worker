@@ -44,6 +44,7 @@ export default {
 
       page.on('requestfailed', (req) => {
         const url = req.url();
+        console.log('Redirect captured:', url);
         if (url.startsWith('mym')) {
           try {
             const urlParams = new URLSearchParams(url.split('?')[1]);

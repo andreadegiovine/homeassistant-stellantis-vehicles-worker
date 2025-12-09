@@ -66,33 +66,34 @@ export default {
       });
 
       const SELECTORS = {
-        email: 'input[name="username"]',
-        password: 'input[name="password"]',
-        submit: 'input[type="submit"]',
-        authorize: 'input[type="submit"]'
+        email: '#gigya-login-form > input[name="username"]',
+        password: '#gigya-login-form > input[name="password"]',
+        submit: '#gigya-login-form > input[type="submit"]',
+        authorize: '#cvs_from > input[type="submit"]'
       };
 
       console.log('Waiting for login form...');
       await page.waitForSelector(SELECTORS.email, { timeout: 20000 });
+      await page.waitForSelector(SELECTORS.password, { timeout: 20000 });
+      await page.waitForSelector(SELECTORS.submit, { timeout: 20000 });
 
       console.log('Filling credentials...');
       await page.type(SELECTORS.email, email, { delay: 100 });
       await page.type(SELECTORS.password, password, { delay: 100 });
 
-      await new Promise(resolve => setTimeout(resolve, 3000));
-
       console.log('Submitting login form...');
-      await Promise.all([
-        page.click(SELECTORS.submit),
-        page.waitForNavigation({ waitUntil: 'networkidle2', timeout: 30000 }).catch(() => {})
-      ]);
+      await page.click(SELECTORS.submit);
+
+      console.log('Submitting confirm form...');
+      await page.waitForNavigation({ waitUntil: 'networkidle2', timeout: 30000 }).catch(() => {});
 
       console.log('Waiting for confirm form...');
       await page.waitForSelector(SELECTORS.authorize, { timeout: 20000 });
-      await Promise.all([
-        page.click(SELECTORS.authorize),
-        (new Promise(resolve => setTimeout(resolve, 3000)))
-      ]);
+
+      console.log('Submitting confirm form...');
+      await page.click(SELECTORS.authorize);
+
+      await new Promise(resolve => setTimeout(resolve, 3000)));
 
       await browser.close();
 

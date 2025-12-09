@@ -66,10 +66,10 @@ export default {
       });
 
       const SELECTORS = {
-        email: '#gigya-login-form > input[name="username"]',
-        password: '#gigya-login-form > input[name="password"]',
-        submit: '#gigya-login-form > input[type="submit"]',
-        authorize: '#cvs_from > input[type="submit"]'
+        email: '#gigya-login-form input[name="username"]',
+        password: '#gigya-login-form input[name="password"]',
+        submit: '#gigya-login-form input[type="submit"]',
+        authorize: '#cvs_from input[type="submit"]'
       };
 
       console.log('Waiting for login form...');

@@ -93,7 +93,7 @@ export default {
       console.log('Submitting confirm form...');
       await page.click(SELECTORS.authorize);
 
-      await new Promise(resolve => setTimeout(resolve, 3000)));
+      await new Promise(resolve => setTimeout(resolve, 3000));
 
       await browser.close();
 

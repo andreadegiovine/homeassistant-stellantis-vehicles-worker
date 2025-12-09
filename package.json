@@ -6,7 +6,7 @@
     "build": "esbuild src/index.js --bundle --format=esm --outfile=dist/index.js"
   },
   "dependencies": {
-    "@cloudflare/puppeteer": "^22.13.1"
+    "@cloudflare/puppeteer": "*"
   },
   "devDependencies": {
     "esbuild": "^0.20.2"

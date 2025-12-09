@@ -32,7 +32,7 @@ export default {
       const BROWSERLESS_URL = `https://chrome.browserless.io/function?token=${env.BROWSERLESS_TOKEN}`;
 
       const browserFunction = `
-        module.exports = async ({ page, context }) => {
+        async ({ page, context }) => {
           const { url, email, password } = context;
           
           await page.setViewport({ width: 1280, height: 720 });

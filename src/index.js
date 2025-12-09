@@ -79,7 +79,7 @@ export default {
       await page.type(SELECTORS.email, email, { delay: 100 });
       await page.type(SELECTORS.password, password, { delay: 100 });
 
-      await page.waitForTimeout(3000);
+      await new Promise(resolve => setTimeout(resolve, 3000));
 
       console.log('Submitting login form...');
       await Promise.all([
@@ -91,7 +91,7 @@ export default {
       await page.waitForSelector(SELECTORS.authorize, { timeout: 20000 });
       await Promise.all([
         page.click(SELECTORS.authorize),
-        page.waitForTimeout(3000)
+        (new Promise(resolve => setTimeout(resolve, 3000)))
       ]);
 
       await browser.close();

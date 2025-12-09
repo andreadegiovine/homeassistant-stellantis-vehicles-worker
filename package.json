@@ -1,0 +1,14 @@
+{
+  "name": "hass-stellantis-vehicles-oauth",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "build": "esbuild src/index.js --bundle --format=esm --outfile=dist/index.js"
+  },
+  "dependencies": {
+    "@cloudflare/puppeteer": "^22.13.1"
+  },
+  "devDependencies": {
+    "esbuild": "^0.20.2"
+  }
+}

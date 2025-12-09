@@ -29,9 +29,10 @@ export default {
 
       console.log('Starting Opel authentication...');
 
-      const BROWSERLESS_URL = `${env.RENDER_URL}/function?token=${env.RENDER_TOKEN}`;
+      const contextParam = encodeURIComponent(JSON.stringify({ url, email, password }));
+      const BROWSERLESS_URL = `${env.RENDER_URL}/function?token=${env.RENDER_TOKEN}&context=${contextParam}`;
 
-      const browserFunction = `export default async function({ page, context }) {
+      const browserFunction = `module.exports = async ({ page, context }) => {
           const { url, email, password } = context;
           
           await page.setViewport({ width: 1280, height: 720 });
@@ -101,11 +102,8 @@ export default {
 
       const response = await fetch(BROWSERLESS_URL, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          code: browserFunction,
-          context: { url, email, password }
-        })
+        headers: { 'Content-Type': 'application/javascript' },
+        body: browserFunction
       });
 
       const text = await response.text();

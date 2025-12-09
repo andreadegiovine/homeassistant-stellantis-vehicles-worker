@@ -20,9 +20,9 @@ export default {
     let browser;
 
     try {
-      const { authUrl, email, password } = await request.json();
+      const { url, email, password } = await request.json();
 
-      if (!authUrl || !email || !password) {
+      if (!url || !email || !password) {
         return new Response(JSON.stringify({
           error: 'Missing required params'
         }), {
@@ -59,7 +59,7 @@ export default {
       });
 
       console.log('Navigating to Opel login...');
-      await page.goto(authUrl, {
+      await page.goto(url, {
         waitUntil: 'networkidle2',
         timeout: 30000
       });

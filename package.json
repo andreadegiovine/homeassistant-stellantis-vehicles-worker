@@ -3,10 +3,12 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "build": "esbuild src/index.js --bundle --format=esm --outfile=dist/index.js"
+    "build": "esbuild src/index.js --platform=node --bundle --format=esm --outfile=dist/index.js"
+  },
+  "dependencies": {
+    "@cloudflare/puppeteer": "^1.0.4"
   },
   "devDependencies": {
-    "@cloudflare/puppeteer": "^1.0.4",
     "esbuild": "^0.20.2"
   }
 }

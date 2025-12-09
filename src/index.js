@@ -58,7 +58,7 @@ export default {
         }
       });
 
-      console.log('Navigating to Opel login...');
+      console.log('Navigating to login...');
       await page.goto(url, {
         waitUntil: 'networkidle2',
         timeout: 30000
@@ -72,30 +72,26 @@ export default {
       };
 
       console.log('Waiting for login form...');
-      await page.waitForSelector(SELECTORS.email, { timeout: 15000 });
+      await page.waitForSelector(SELECTORS.email, { timeout: 20000 });
 
       console.log('Filling credentials...');
       await page.type(SELECTORS.email, email, { delay: 100 });
       await page.type(SELECTORS.password, password, { delay: 100 });
 
+      await page.waitForTimeout(3000);
+
       console.log('Submitting login form...');
       await Promise.all([
         page.click(SELECTORS.submit),
-        page.waitForNavigation({ waitUntil: 'networkidle2', timeout: 15000 }).catch(() => {})
+        page.waitForNavigation({ waitUntil: 'networkidle2', timeout: 30000 }).catch(() => {})
       ]);
 
-      await page.waitForTimeout(3000);
-
-      try {
-        const authorizeButton = await page.$(SELECTORS.authorize);
-        if (authorizeButton) {
-          console.log('Clicking authorize button...');
-          await authorizeButton.click();
-          await page.waitForTimeout(3000);
-        }
-      } catch (e) {
-        console.log('No authorize button or already redirected');
-      }
+      console.log('Waiting for confirm form...');
+      await page.waitForSelector(SELECTORS.authorize, { timeout: 20000 });
+      await Promise.all([
+        page.click(SELECTORS.authorize),
+        page.waitForTimeout(3000)
+      ]);
 
       await browser.close();
 

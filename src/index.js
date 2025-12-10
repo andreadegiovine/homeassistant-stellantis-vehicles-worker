@@ -33,9 +33,14 @@ export default {
         });
       }
 
-      console.log('Starting Opel authentication...');
+      const getBrowserSessionTiming = (startTime) => {
+        const endTime = performance.now();
+        return ((endTime - startTime) / 1000).toFixed(2);
+      }
 
-      // Launch browser
+      console.log('Start browser session...');
+      const startTime = performance.now();
+      
       browser = await puppeteer.launch(env.BROWSER);
       const page = await browser.newPage();
 
@@ -95,7 +100,8 @@ export default {
       console.log('Submitting confirm form...');
       await page.click(SELECTORS.authorize);
 
-      await browser.close();
+      await browser.close().catch(() => {});
+      console.log('Browser session closed:', getBrowserSessionTiming(startTime));
 
       await new Promise(resolve => setTimeout(resolve, 500));
 
@@ -116,6 +122,7 @@ export default {
     } catch (error) {
       if (browser) {
         await browser.close().catch(() => {});
+        console.log('Browser session closed:', getBrowserSessionTiming(startTime));
       }
 
       console.error('Error:', error.message);

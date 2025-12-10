@@ -108,11 +108,7 @@ export default {
         })
       });
 
-      const text = await response.text();
-      console.log("Browserless raw response:", text);
-
-      // const result = await response.json();
-      result = JSON.parse(text);
+      const result = await response.json();
 
       if (result.success && result.code) {
         return new Response(JSON.stringify({ code: result.code }), {

@@ -31,7 +31,8 @@ export default {
 
       const BROWSERLESS_URL = `https://chrome.browserless.io/function?token=${env.BROWSERLESS_TOKEN}`;
 
-      const browserFunction = `export default async function({ page, context }) => {
+      const browserFunction = `
+        export default async function({ page, context }) => {
           const { url, email, password } = context;
           
           await page.setViewport({ width: 1280, height: 720 });
@@ -97,7 +98,8 @@ export default {
           }
 
           return { success: false, error: 'Code not found after authentication' };
-        };`;
+        };
+      `;
 
       const response = await fetch(BROWSERLESS_URL, {
         method: 'POST',

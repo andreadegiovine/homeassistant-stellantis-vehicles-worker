@@ -19,6 +19,10 @@ export default {
     }
 
     let browser;
+    const getBrowserSessionTiming = (startTime) => {
+      const endTime = performance.now();
+      return ((endTime - startTime) / 1000).toFixed(2);
+    }
 
     try {
       const { url, email, password } = await request.json();
@@ -31,11 +35,6 @@ export default {
           status: 400,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' }
         });
-      }
-
-      const getBrowserSessionTiming = (startTime) => {
-        const endTime = performance.now();
-        return ((endTime - startTime) / 1000).toFixed(2);
       }
 
       console.log('Start browser session...');

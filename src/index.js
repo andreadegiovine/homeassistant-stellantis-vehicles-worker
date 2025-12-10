@@ -57,7 +57,7 @@ export default {
             const code = urlParams.get('code');
             if (code) {
               capturedCode = code;
-              console.log('Code captured:', code);
+              console.log('Code captured!');
             }
           } catch (e) {
             console.error('Error parsing URL:', e.message);

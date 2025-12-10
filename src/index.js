@@ -29,7 +29,7 @@ export default {
 
       console.log('Starting Opel authentication...');
 
-      const BROWSERLESS_URL = `https://chrome.browserless.io/function?token=${env.BROWSERLESS_TOKEN}&timeout=120000`;
+      const BROWSERLESS_URL = `https://chrome.browserless.io/function?token=${env.BROWSERLESS_TOKEN}`;
 
       const browserFunction = `export default async function({ page, context }) {
           const { url, email, password } = context;

@@ -10,7 +10,8 @@ export default {
 
     if (request.method !== 'POST') {
       return new Response(JSON.stringify({
-        error: 'Method not allowed'
+        error: 'Method not allowed',
+        code: 400
       }), {
         status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
@@ -24,7 +25,8 @@ export default {
 
       if (!url || !email || !password) {
         return new Response(JSON.stringify({
-          error: 'Missing required params'
+          error: 'Missing required params',
+          code: 400
         }), {
           status: 400,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' }
@@ -44,8 +46,8 @@ export default {
 
       page.on('requestfailed', (req) => {
         const url = req.url();
-        console.log('Redirect captured:', url);
         if (url.startsWith('mym')) {
+          console.log('Redirect captured:', url);
           try {
             const urlParams = new URLSearchParams(url.split('?')[1]);
             const code = urlParams.get('code');
@@ -61,8 +63,8 @@ export default {
 
       console.log('Navigating to login...');
       await page.goto(url, {
-        waitUntil: 'networkidle2',
-        timeout: 30000
+        waitUntil: 'domcontentloaded',
+        timeout: 20000
       });
 
       const SELECTORS = {
@@ -73,29 +75,29 @@ export default {
       };
 
       console.log('Waiting for login form...');
-      await page.waitForSelector(SELECTORS.email, { timeout: 20000 });
-      await page.waitForSelector(SELECTORS.password, { timeout: 20000 });
-      await page.waitForSelector(SELECTORS.submit, { timeout: 20000 });
+      await page.waitForSelector(SELECTORS.email, { timeout: 10000 });
+      await page.waitForSelector(SELECTORS.password, { timeout: 10000 });
+      await page.waitForSelector(SELECTORS.submit, { timeout: 10000 });
 
       console.log('Filling credentials...');
-      await page.type(SELECTORS.email, email, { delay: 100 });
-      await page.type(SELECTORS.password, password, { delay: 100 });
+      await page.type(SELECTORS.email, email, { delay: 50 });
+      await page.type(SELECTORS.password, password, { delay: 50 });
 
       console.log('Submitting login form...');
       await page.click(SELECTORS.submit);
 
       console.log('Submitting confirm form...');
-      await page.waitForNavigation({ waitUntil: 'networkidle2', timeout: 30000 }).catch(() => {});
+      await page.waitForNavigation({ waitUntil: 'domcontentloaded', timeout: 20000 }).catch(() => {});
 
       console.log('Waiting for confirm form...');
-      await page.waitForSelector(SELECTORS.authorize, { timeout: 20000 });
+      await page.waitForSelector(SELECTORS.authorize, { timeout: 10000 });
 
       console.log('Submitting confirm form...');
       await page.click(SELECTORS.authorize);
 
-      await new Promise(resolve => setTimeout(resolve, 3000));
-
       await browser.close();
+
+      await new Promise(resolve => setTimeout(resolve, 500));
 
       if (capturedCode) {
         return new Response(JSON.stringify({ code: capturedCode }), {
@@ -104,7 +106,8 @@ export default {
       }
 
       return new Response(JSON.stringify({
-        error: 'Code not found after authentication'
+        error: 'Code not found after authentication',
+        code: 400
       }), {
         status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
@@ -119,9 +122,9 @@ export default {
 
       return new Response(JSON.stringify({
         error: error.message,
-        stack: error.stack
+        code: 400
       }), {
-        status: 500,
+        status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       });
     }

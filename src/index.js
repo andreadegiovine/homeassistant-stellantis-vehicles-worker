@@ -90,7 +90,7 @@ export default {
       console.log('Submitting login form...');
       await page.click(SELECTORS.submit);
 
-      console.log('Submitting confirm form...');
+      console.log('Waiting for redirects...');
       await page.waitForNavigation({ waitUntil: 'domcontentloaded', timeout: 20000 }).catch(() => {});
 
       console.log('Waiting for confirm form...');

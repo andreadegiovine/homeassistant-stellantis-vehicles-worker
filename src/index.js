@@ -34,7 +34,7 @@ export default {
     if (request.method !== 'POST') {
       logEndProcess();
       return new Response(JSON.stringify({
-        error: 'Method not allowed',
+        message: 'Method not allowed',
         code: 400
       }), {
         status: 400,
@@ -48,7 +48,7 @@ export default {
       if (!url || !email || !password) {
         logEndProcess();
         return new Response(JSON.stringify({
-          error: 'Missing required params',
+          message: 'Missing required params',
           code: 400
         }), {
           status: 400,
@@ -145,7 +145,7 @@ export default {
 
       logEndProcess();
       return new Response(JSON.stringify({
-        error: 'Code not found after authentication',
+        message: 'Code not found after authentication',
         code: 400
       }), {
         status: 400,
@@ -161,7 +161,7 @@ export default {
 
       logEndProcess();
       return new Response(JSON.stringify({
-        error: error.message,
+        message: error.message,
         code: 400
       }), {
         status: 400,

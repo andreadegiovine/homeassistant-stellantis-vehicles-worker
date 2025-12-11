@@ -34,7 +34,6 @@ export default {
 
     const httpResponse = (message, code = 400) => {
       logEndProcess();
-      console.log("Response:", message);
       let body = {};
       if (code == 200){
         body = {
@@ -50,6 +49,7 @@ export default {
           code: code
         };
       }
+      console.log("Response:", message);
       return new Response(JSON.stringify(body), {
         status: code,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }

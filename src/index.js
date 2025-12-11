@@ -56,8 +56,8 @@ export default {
         });
       }
 
-      logStartBrowser();
       browser = await puppeteer.launch(env.BROWSER);
+      logStartBrowser();
       const page = await browser.newPage();
 
       await page.setViewport({ width: 1280, height: 720 });
@@ -153,7 +153,7 @@ export default {
       });
 
     } catch (error) {
-      console.error('Error:', error.message);
+      console.error('Error:', error);
       if (browser) {
         await browser.close().catch(() => {});
         logEndBrowser();

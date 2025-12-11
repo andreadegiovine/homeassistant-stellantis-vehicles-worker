@@ -2,6 +2,29 @@ import puppeteer from "@cloudflare/puppeteer";
 
 export default {
   async fetch(request, env) {
+    let browser;
+
+    let processSessionStartTime;
+    const logStartProcess = () => {
+      processSessionStartTime = performance.now();
+      console.log('Process start');
+    }
+    const logEndProcess = () => {
+      const processTiming = processSessionStartTime ? ((performance.now() - processSessionStartTime) / 1000).toFixed(2) : "N/A";
+      console.log('Process end:', processTiming);
+    }
+
+    let browserSessionStartTime;
+    const logStartBrowser = () => {
+      browserSessionStartTime = performance.now();
+      console.log('Browser start');
+    }
+    const logEndBrowser = () => {
+      const browserTiming = browserSessionStartTime ? ((performance.now() - browserSessionStartTime) / 1000).toFixed(2) : "N/A";
+      console.log('Browser end:', browserTiming);
+    }
+
+    logStartProcess();
     const corsHeaders = {
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Methods': 'POST',
@@ -9,6 +32,7 @@ export default {
     };
 
     if (request.method !== 'POST') {
+      logEndProcess();
       return new Response(JSON.stringify({
         error: 'Method not allowed',
         code: 400
@@ -18,17 +42,11 @@ export default {
       });
     }
 
-    let browser;
-    const getBrowserSessionTiming = (startTime) => {
-      const endTime = performance.now();
-      return ((endTime - startTime) / 1000).toFixed(2);
-    }
-    const startTime = performance.now();
-
     try {
       const { url, email, password } = await request.json();
 
       if (!url || !email || !password) {
+        logEndProcess();
         return new Response(JSON.stringify({
           error: 'Missing required params',
           code: 400
@@ -38,8 +56,7 @@ export default {
         });
       }
 
-      console.log('Start browser session...');
-      
+      logStartBrowser();
       browser = await puppeteer.launch(env.BROWSER);
       const page = await browser.newPage();
 
@@ -49,15 +66,16 @@ export default {
       let capturedCode = null;
 
       page.on('requestfailed', (req) => {
-        const url = req.url();
-        if (url.startsWith('mym')) {
-          console.log('Redirect captured:', url);
+        const reqUrl = req.url();
+        if (reqUrl.startsWith('mym')) {
           try {
-            const urlParams = new URLSearchParams(url.split('?')[1]);
+            const urlParams = new URLSearchParams(reqUrl.split('?')[1]);
             const code = urlParams.get('code');
             if (code) {
               capturedCode = code;
               console.log('Code captured!');
+            } else {
+              console.log('Code missing on redirect:', reqUrl);
             }
           } catch (e) {
             console.error('Error parsing URL:', e.message);
@@ -99,17 +117,33 @@ export default {
       console.log('Submitting confirm form...');
       await page.click(SELECTORS.authorize);
 
-      await browser.close().catch(() => {});
-      console.log('Browser session closed:', getBrowserSessionTiming(startTime));
+      console.log('Waiting for code capture...');
+      await new Promise(resolve => {
+        const checkInterval = setInterval(() => {
+          if (capturedCode) {
+            clearInterval(checkInterval);
+            resolve();
+          }
+        }, 100);
 
-      await new Promise(resolve => setTimeout(resolve, 500));
+        setTimeout(() => {
+          clearInterval(checkInterval);
+          resolve();
+        }, 2000);
+      });
+
+      await browser.close().catch(() => {});
+      logEndBrowser();
 
       if (capturedCode) {
+        logEndProcess();
         return new Response(JSON.stringify({ code: capturedCode }), {
+          status: 200,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' }
         });
       }
 
+      logEndProcess();
       return new Response(JSON.stringify({
         error: 'Code not found after authentication',
         code: 400
@@ -119,13 +153,13 @@ export default {
       });
 
     } catch (error) {
+      console.error('Error:', error.message);
       if (browser) {
         await browser.close().catch(() => {});
-        console.log('Browser session closed:', getBrowserSessionTiming(startTime));
+        logEndBrowser();
       }
 
-      console.error('Error:', error.message);
-
+      logEndProcess();
       return new Response(JSON.stringify({
         error: error.message,
         code: 400

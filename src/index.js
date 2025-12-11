@@ -25,35 +25,43 @@ export default {
     }
 
     logStartProcess();
+
     const corsHeaders = {
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Methods': 'POST',
       'Access-Control-Allow-Headers': 'Content-Type',
     };
 
-    if (request.method !== 'POST') {
+    const httpResponse = (message, code = 400) => {
       logEndProcess();
-      return new Response(JSON.stringify({
-        message: 'Method not allowed',
-        code: 400
-      }), {
-        status: 400,
+      console.log("Response:", message);
+      let body = {};
+      if (code == 200){
+        body = {
+          code: message
+        };
+      }
+      if (code == 400){
+        body = {
+          message: message,
+          code: code
+        };
+      }
+      return new Response(JSON.stringify(body), {
+        status: code,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       });
+    }
+
+    if (request.method !== 'POST') {
+      return httpResponse('Method not allowed');
     }
 
     try {
       const { url, email, password } = await request.json();
 
       if (!url || !email || !password) {
-        logEndProcess();
-        return new Response(JSON.stringify({
-          message: 'Missing required params',
-          code: 400
-        }), {
-          status: 400,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-        });
+        return httpResponse('Missing required params');
       }
 
       browser = await puppeteer.launch(env.BROWSER);
@@ -70,9 +78,9 @@ export default {
         if (reqUrl.startsWith('mym')) {
           try {
             const urlParams = new URLSearchParams(reqUrl.split('?')[1]);
-            const code = urlParams.get('code');
-            if (code) {
-              capturedCode = code;
+            const oauthCode = urlParams.get('code');
+            if (oauthCode) {
+              capturedCode = oauthCode;
               console.log('Code captured!');
             } else {
               console.log('Code missing on redirect:', reqUrl);
@@ -136,37 +144,18 @@ export default {
       logEndBrowser();
 
       if (capturedCode) {
-        logEndProcess();
-        return new Response(JSON.stringify({ code: capturedCode }), {
-          status: 200,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-        });
+        return httpResponse(capturedCode, 200);
       }
 
-      logEndProcess();
-      return new Response(JSON.stringify({
-        message: 'Code not found after authentication',
-        code: 400
-      }), {
-        status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      });
-
-    } catch (error) {
-      console.error('Error:', error);
+      return httpResponse('Code not found after authentication');
+    } catch (e) {
+      console.error('Error:', e);
       if (browser) {
         await browser.close().catch(() => {});
         logEndBrowser();
       }
 
-      logEndProcess();
-      return new Response(JSON.stringify({
-        message: error.message,
-        code: 400
-      }), {
-        status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      });
+      return httpResponse(e.message);
     }
   }
 };

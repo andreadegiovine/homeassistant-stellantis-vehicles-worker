@@ -23,6 +23,7 @@ export default {
       const endTime = performance.now();
       return ((endTime - startTime) / 1000).toFixed(2);
     }
+    const startTime = performance.now();
 
     try {
       const { url, email, password } = await request.json();
@@ -38,7 +39,6 @@ export default {
       }
 
       console.log('Start browser session...');
-      const startTime = performance.now();
       
       browser = await puppeteer.launch(env.BROWSER);
       const page = await browser.newPage();

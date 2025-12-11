@@ -42,6 +42,9 @@ export default {
         };
       }
       if (code == 400){
+        if (message.includes('code: 429')) {
+          message = 'Remote service rate limit exceeded';
+        }
         body = {
           message: message,
           code: code
@@ -147,9 +150,9 @@ export default {
         return httpResponse(capturedCode, 200);
       }
 
-      return httpResponse('Code not found after authentication');
+      return httpResponse('Code not found');
     } catch (e) {
-      console.error('Error:', e);
+      console.error(e);
       if (browser) {
         await browser.close().catch(() => {});
         logEndBrowser();

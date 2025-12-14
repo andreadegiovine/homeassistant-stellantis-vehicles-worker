@@ -42,7 +42,7 @@ export default {
       }
       if (code == 400){
         if (message.includes('code: 429')) {
-          message = 'Remote service rate limit exceeded';
+          message = 'Remote service limit exceeded, please wait until tomorrow or use the manual method';
         }
         body = {
           message: message,

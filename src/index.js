@@ -94,7 +94,7 @@ export default {
         }
       });
 
-      console.log('Navigating to login...');
+      console.log('Navigating to login:', url);
       await page.goto(url, {
         waitUntil: 'domcontentloaded',
         timeout: 20000
